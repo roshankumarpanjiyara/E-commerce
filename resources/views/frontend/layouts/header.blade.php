@@ -3,7 +3,10 @@
     <head>
         @php
             use App\Models\SeoSetting;
+            use App\Models\WebsiteSetting;
+
             $seo = SeoSetting::find(1);
+            $website = WebsiteSetting::find(1);
         @endphp 
         <meta charset="utf-8" />
         <title>@yield('main_title')E-Commerce</title>
@@ -33,10 +36,12 @@
         <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
         <style>
             :root{
-                --hue-color: #3BB77E;
-                /* --main-color: hsl(var(--hue-color), 69%, 61%); */
-                --main-color: #3BB77E;
-                --hover-color: #FDC040;
+                /* --hue-color: #3BB77E; */
+                /* --main-color: hsl(var(--hue-color), 10%, 10%); */
+                /* --main-color: #3BB77E; */
+                /* --hover-color: #FDC040; */
+                --main-color: {{$website->main_color}};
+                --hover-color: {{$website->hover_color}};
             }
         </style>
     </head>

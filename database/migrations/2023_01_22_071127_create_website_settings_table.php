@@ -28,6 +28,8 @@ return new class extends Migration
             $table->string('twitter')->nullable(); 
             $table->string('linkedin')->nullable(); 
             $table->string('youtube')->nullable(); 
+            $table->string('main_color'); 
+            $table->string('hover_color'); 
             $table->timestamps();
         });
     }

@@ -322,6 +322,40 @@
                                 <!--end::Col-->
                             </div>
                             <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="row mb-6">
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Main Color</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-lg-8 fv-row fv-plugins-icon-container">
+                                    <input type="color" name="main_color" class="form-control form-control-lg form-control-solid @error('main_color') is-invalid @enderror" placeholder="Main Color" value="{{$site->main_color}}" autocomplete="off">
+                                    @error('main_color')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="row mb-6">
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Hover Color</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-lg-8 fv-row fv-plugins-icon-container">
+                                    <input type="color" name="hover_color" class="form-control form-control-lg form-control-solid @error('hover_color') is-invalid @enderror" placeholder="Hover Color" value="{{$site->hover_color}}" autocomplete="off">
+                                    @error('hover_color')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Input group-->
                         </div>
                         <!--end::Card body-->
                         <!--begin::Actions-->

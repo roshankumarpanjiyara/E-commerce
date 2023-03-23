@@ -28,6 +28,8 @@ class WebsiteController extends Controller
             'email' => 'required',
             'company_name'=>'required',
             'company_address'=>'required|max:100',
+            'main_color' => 'required',
+            'hover_color' => 'required',
         ]);
 
         $data = $request->all();
