@@ -190,7 +190,7 @@
                                                     </span>
                                                     <!--end::Svg Icon-->Transaction Id</div>
                                                 </td>
-                                                <td class="fw-bolder text-end fs-8">{{$order->transaction_id}}</td>
+                                                <td class="text-end fs-8">{{$order->transaction_id}}</td>
                                             </tr>
                                             <!--end::Payment method-->
                                         @endif
@@ -348,6 +348,8 @@
                                                     <a class="text-gray-600">{{$order->shipping_number}}</a>
                                                 @elseif ($order->status == 'Delivered')
                                                     <a class="text-gray-600">Order Delivered</a>
+                                                @elseif ($order->status == 'Cancel')
+                                                    <a class="text-gray-600">Order Cancelled</a>
                                                 @else
                                                     <a class="text-gray-600">Not Shipped</a>
                                                 @endif

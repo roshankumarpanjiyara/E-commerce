@@ -350,6 +350,9 @@ Route::middleware(['auth:sanctum,admin', config('jetstream.auth_session'), 'veri
 
             //invoice download
             Route::get('/orders/invoice/{id}/download/','orderInvoiceDownload')->name('order.invoice.download');
+            
+            //cancel reason
+            Route::post('/orders/cancel/{id}/reason','cancelOrderReason')->name('cancel.order.reason');
         });
 
         //report

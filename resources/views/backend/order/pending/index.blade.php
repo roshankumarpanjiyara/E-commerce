@@ -121,19 +121,101 @@
                                             </span>
                                             <!--end::Svg Icon-->
                                         </a>
-                                        <a href="" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" data-bs-toggle="tooltip" title="Delete" id="delete">
-                                            <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
-                                            <span class="svg-icon svg-icon-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                    <path d="M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z" fill="currentColor" />
-                                                    <path opacity="0.5" d="M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z" fill="currentColor" />
-                                                    <path opacity="0.5" d="M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z" fill="currentColor" />
-                                                </svg>
-                                            </span>
-                                            <!--end::Svg Icon-->
-                                        </a>
+                                        <span data-bs-toggle="modal" data-bs-target="#cancel_reason_modal{{$order->id}}">
+                                            <a class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" data-bs-toggle="tooltip" title="Cancel">
+                                                <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/kt-products/docs/metronic/html/releases/2023-01-30-131017/core/html/src/media/icons/duotune/arrows/arr061.svg-->
+                                                <span class="svg-icon svg-icon-2">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor"/>
+                                                        <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor"/>
+                                                    </svg>
+                                                    
+                                                </span>
+                                                <!--end::Svg Icon-->
+                                            </a>
+                                        </span>
                                     </td>
                                     <!--end::Action=-->
+                                    <div class="modal fade" id="cancel_reason_modal{{$order->id}}" tabindex="-1" aria-hidden="true">
+                                        <!--begin::Modal dialog-->
+                                        <div class="modal-dialog modal-dialog-centered mw-650px">
+                                            <!--begin::Modal content-->
+                                            <div class="modal-content">
+                                                <!--begin::Modal header-->
+                                                <div class="modal-header">
+                                                    <!--begin::Modal title-->
+                                                    <h2>Cancel Reason</h2>
+                                                    <!--end::Modal title-->
+                                                    <!--begin::Close-->
+                                                    <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                                        <span class="svg-icon svg-icon-1">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                                <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                                                <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                                                            </svg>
+                                                        </span>
+                                                        <!--end::Svg Icon-->
+                                                    </div>
+                                                    <!--end::Close-->
+                                                </div>
+                                                <!--end::Modal header-->
+                                                <!--begin::Modal body-->
+                                                <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                                                    <!--begin::Form-->
+                                                    <form id="kt_modal_new_card_form" class="form" action="{{route("cancel.order.reason",[$order->id])}}" method="post">@csrf
+                                                        <!--begin::Notice-->
+                                                        <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-5 p-6">
+                                                            <!--begin::Wrapper-->
+                                                            <div class="d-flex flex-stack flex-grow-1">
+                                                                <!--begin::Content-->
+                                                                <div class="fw-bold">
+                                                                    <p><strong>Order ID: </strong>{{$order->order_number}}</p>
+                                                                    <p><strong>Order Placed at: </strong>{{$order->order_date}}</p>
+                                                                    <p><strong>Customer Name: </strong>{{$order->name}}</p>
+                                                                    <p><strong>Customer Email: </strong>{{$order->email}}</p>
+                                                                </div>
+                                                                <!--end::Content-->
+                                                            </div>
+                                                            <!--end::Wrapper-->
+                                                        </div>
+                                                        <!--end::Notice-->
+                                                        <!--begin::Input group-->
+                                                        <div class="d-flex flex-column mb-7 fv-row">
+                                                            <!--begin::Label-->
+                                                            <label class="d-flex align-items-center fs-6 fw-bold form-label mb-2">
+                                                                <span class="required">Cancel Reason</span>
+                                                                <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Enter valid cancel reason"></i>
+                                                            </label>
+                                                            <!--end::Label-->
+                                                            <textarea class="form-control form-control-solid @error('cancel_reason') is-invalid @enderror" name="cancel_reason" id="" cols="30" rows="5" placeholder="Cancel Reason">Your order(#{{$order->order_number}}) have been cancelled for technical reson. Kindly visit your order page for more information.</textarea>
+                                                            <!--begin::Description-->
+                                                            @error('cancel_reason')
+                                                                <span class="invalid-feedback" role="alert">
+                                                                    <strong>{{ $message }}</strong>
+                                                                </span>
+                                                            @enderror
+                                                            <!--end::Description-->
+                                                        </div>
+                                                        <!--end::Input group-->
+                                                        <!--begin::Actions-->
+                                                        <div class="text-center pt-5">
+                                                            <button type="submit" id="kt_modal_new_card_submit" class="btn btn-primary">
+                                                                <span class="indicator-label">Submit</span>
+                                                                <span class="indicator-progress">Please wait...
+                                                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                                            </button>
+                                                        </div>
+                                                        <!--end::Actions-->
+                                                    </form>
+                                                    <!--end::Form-->
+                                                </div>
+                                                <!--end::Modal body-->
+                                            </div>
+                                            <!--end::Modal content-->
+                                        </div>
+                                        <!--end::Modal dialog-->
+                                    </div>
                                 </tr>
                                 <!--end::Table row-->
                             @empty

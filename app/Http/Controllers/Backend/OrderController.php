@@ -129,4 +129,18 @@ class OrderController extends Controller
         return $pdf->download('invoice.pdf');
         // return view('backend.order.order_invoice',compact('order','orderItems'));
     }
+
+    //cancel order reason
+    public function cancelOrderReason(Request $request, $order_id){
+        $this->validate($request,[
+            'cancel_reason' => 'required',
+        ]);
+        Order::findOrFail($order_id)->update([
+            'status' => 'Cancel',
+            'cancel_date' => Carbon::now()->format('D, d F Y'),
+            'cancel_reason' => $request->cancel_reason,
+        ]);
+        toast('Order Cancelled!','success')->autoClose(5000)->width('450px')->timerProgressBar();
+        return Redirect()->route('all.orders');
+    }
 }

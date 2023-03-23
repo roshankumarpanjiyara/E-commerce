@@ -44,9 +44,9 @@ return new class extends Migration
             $table->string('shipping_number')->nullable();
             $table->string('delivered_date')->nullable();
             $table->string('cancel_date')->nullable();
-            $table->string('cancel_reason')->nullable();
+            $table->text('cancel_reason')->nullable();
             $table->string('return_date')->nullable();
-            $table->string('return_reason')->nullable();
+            $table->text('return_reason')->nullable();
             $table->string('status');
             $table->foreign('state_id')->references('id')->on('states')->onDelete('cascade'); //only work on unsignedBigInteger
             $table->foreign('district_id')->references('id')->on('districts')->onDelete('cascade'); //only work on unsignedBigInteger

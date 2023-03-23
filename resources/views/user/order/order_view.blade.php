@@ -107,6 +107,16 @@
                         </div>
                     @endif
                 @endif
+                @if ($order->status === 'Cancel' && $order->cancel_reason != NULL)
+                    <div class="row mt-30">
+                        <div class="col-lg-12">
+                            <div class="calculate-shiping p-20 border-radius-15 border">
+                                <h4 class="mb-10">Order Cancel Reason</h4>
+                                <span class="stock-status text-danger mb-0"> {{$order->cancel_reason}} </span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
             <div class="col-lg-4">
                 <div class="border p-md-4 cart-totals ml-30">
