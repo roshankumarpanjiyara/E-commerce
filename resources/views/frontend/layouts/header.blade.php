@@ -31,7 +31,14 @@
         <script src="https://js.stripe.com/v3/"></script>
 
         <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
-
+        <style>
+            :root{
+                --hue-color: #3BB77E;
+                /* --main-color: hsl(var(--hue-color), 69%, 61%); */
+                --main-color: #3BB77E;
+                --hover-color: #FDC040;
+            }
+        </style>
     </head>
 
     <body>
