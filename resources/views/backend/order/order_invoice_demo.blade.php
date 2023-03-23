@@ -6,6 +6,7 @@
 		<meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<link rel="shortcut icon" href="{{public_path("logos/new-logo-small-3.png")}}" />
+		<script src="https://cdn.tailwindcss.com"></script>
 		<!--begin::Fonts-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 		<!--end::Fonts-->
@@ -14,7 +15,7 @@
 		<!--end::Page Vendor Stylesheets-->
 		<!--begin::Global Stylesheets Bundle(used by all pages)-->
 		<link href="{{public_path("backend/dist/assets/plugins/global/plugins.bundle.css")}}" rel="stylesheet" type="text/css" />
-		<link href="{{public_path("backend/dist/assets/css/style.bundle.css")}}" rel="stylesheet" type="text/css" />
+		{{-- <link href="{{public_path("backend/dist/assets/css/style.bundle.css")}}" rel="stylesheet" type="text/css" /> --}}
 		<!--end::Global Stylesheets Bundle-->
 	</head>
 	<!--end::Head-->
