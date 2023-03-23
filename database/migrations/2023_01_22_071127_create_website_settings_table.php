@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('company_name'); 
             $table->string('company_slogan')->nullable(); 
             $table->string('company_address'); 
+            $table->string('mobile_promotion')->nullable(); 
             $table->text('scroll_ads')->nullable(); 
             $table->string('facebook')->nullable(); 
             $table->string('instagram')->nullable(); 

@@ -19,7 +19,7 @@
         <meta property="og:url" content="{{$seo->meta_url}}" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <!-- Favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="{{asset("logos/new-logo-small-6.png")}}"/>
+        <link rel="shortcut icon" type="image/x-icon" href="{{asset($website->icon)}}"/>
 
         {{-- google analytics --}}
         <script>
@@ -47,48 +47,6 @@
     </head>
 
     <body>
-        <!-- Modal -->
-        {{-- <div class="modal fade custom-modal" id="onloadModal" tabindex="-1" aria-labelledby="onloadModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div class="modal-body">
-                        <div class="deal" style="background-image: url('{{asset("frontend/assets/imgs/banner/popup-1.png")}}')">
-                            <div class="deal-top">
-                                <h6 class="mb-10 text-brand-2">Deal of the Day</h6>
-                            </div>
-                            <div class="deal-content detail-info">
-                                <h4 class="product-title"><a href="shop-product-right.html" class="text-heading">Organic fruit for your family's health</a></h4>
-                                <div class="clearfix product-price-cover">
-                                    <div class="product-price primary-color float-left">
-                                        <span class="current-price text-brand">$38</span>
-                                        <span>
-                                            <span class="save-price font-md color3 ml-15">26% Off</span>
-                                            <span class="old-price font-md ml-15">$52</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="deal-bottom">
-                                <p class="mb-20">Hurry Up! Offer End In:</p>
-                                <div class="deals-countdown pl-5" data-countdown="2025/03/25 00:00:00">
-                                    <span class="countdown-section"><span class="countdown-amount hover-up">03</span><span class="countdown-period"> days </span></span><span class="countdown-section"><span class="countdown-amount hover-up">02</span><span class="countdown-period"> hours </span></span><span class="countdown-section"><span class="countdown-amount hover-up">43</span><span class="countdown-period"> mins </span></span><span class="countdown-section"><span class="countdown-amount hover-up">29</span><span class="countdown-period"> sec </span></span>
-                                </div>
-                                <div class="product-detail-rating">
-                                    <div class="product-rate-cover text-end">
-                                        <div class="product-rate d-inline-block">
-                                            <div class="product-rating" style="width: 90%"></div>
-                                        </div>
-                                        <span class="font-small ml-5 text-muted"> (32 rates)</span>
-                                    </div>
-                                </div>
-                                <a href="shop-grid-right.html" class="btn hover-up">Shop Now <i class="fi-rs-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
 
         <!-- Quick view -->
         <div class="modal fade custom-modal" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
@@ -175,8 +133,8 @@
         </div>
 
         <header class="header-area header-style-1 header-style-5 header-height-2">
-            <div class="mobile-promotion">
-                <span>Grand opening, <strong>up to 15%</strong> off all items. Only <strong>3 days</strong> left</span>
+            <div class="mobile-promotion py-0">
+                <span>{!! $website->mobile_promotion !!}</span>
             </div>
             <div class="header-top header-top-ptb-1 d-none d-lg-block">
                 <div class="container">
@@ -196,9 +154,7 @@
                             <div class="text-center">
                                 <div id="news-flash" class="d-inline-block">
                                     <ul>
-                                        <li>100% Secure delivery without contacting the courier</li>
-                                        <li>Supper Value Deals - Save more with coupons</li>
-                                        <li>Trendy 25silver jewelry, save up 35% off today</li>
+                                        {!! $website->scroll_ads !!}
                                     </ul>
                                 </div>
                             </div>
@@ -206,7 +162,7 @@
                         <div class="col-xl-3 col-lg-4">
                             <div class="header-info header-info-right">
                                 <ul>
-                                    <li>Need help? Call Us: <strong class="text-brand"> + 1800 900</strong></li>
+                                    <li>Need help? Call Us: <strong class="text-brand"> +91 {{$website->phone}}</strong></li>
                                 </ul>
                             </div>
                         </div>
@@ -217,7 +173,7 @@
                 <div class="container">
                     <div class="header-wrap">
                         <div class="logo logo-width-1">
-                            <a href="/"><img src="{{asset("logos/new-logo-bg-4.png")}}" alt="logo" style="width: 250px"/></a>
+                            <a href="/"><img src="{{asset($website->logo)}}" alt="logo" style="width: 250px"/></a>
                         </div>
                         <div class="header-right">
                             <div class="search-style-1">
@@ -350,41 +306,9 @@
                 <div class="container">
                     <div class="header-wrap header-space-between position-relative">
                         <div class="logo logo-width-1 d-block d-lg-none">
-                            <a href="/"><img src="{{asset("logos/new-logo-bg-4.png")}}" alt="logo" /></a>
+                            <a href="/"><img src="{{asset($website->logo)}}" alt="logo" /></a>
                         </div>
                         <div class="header-nav d-none d-lg-flex pl-5">
-                            {{-- <div class="main-categori-wrap d-none d-lg-block">
-                                <a class="categories-button-active" href="#">
-                                    <span class="fi-rs-apps"></span>All Categories
-                                    <i class="fi-rs-angle-down"></i>
-                                </a>
-                                <div class="categories-dropdown-wrap categories-dropdown-active-large font-heading">
-                                    <div class="d-flex categori-dropdown-inner">
-                                        @php
-                                                $categories = App\Models\Category::orderBy('created_at','ASC')->get();
-                                        @endphp
-                                        @foreach ($categories->chunk(3) as $items)
-                                        @if (!$loop->last)
-                                            <ul>
-                                                @foreach ($items as $category)
-                                                    <li>
-                                                        <a href="/"> <img src="{{asset($category->image)}}" alt="{{$category->name}}" />{{$category->name}}</a>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <ul class="end">
-                                                @foreach ($items as $category)
-                                                    <li>
-                                                        <a href="/"> <img src="{{asset($category->image)}}" alt="{{$category->name}}" />{{$category->name}}</a>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div> --}}
                             <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block font-heading">
                                 <nav>
                                     <ul>
@@ -429,7 +353,7 @@
                         </div>
                         <div class="hotline d-none d-lg-flex">
                             <img src="{{asset("frontend/assets/imgs/theme/icons/icon-headphone.svg")}}" alt="hotline" />
-                            <p>1900 - 888<span>24/7 Support Center</span></p>
+                            <p>+91 {{$website->phone}}<span>24/7 Support Center</span></p>
                         </div>
                         <div class="header-action-icon-2 d-block d-lg-none">
                             <div class="burger-icon burger-icon-white">
@@ -475,7 +399,7 @@
             <div class="mobile-header-wrapper-inner">
                 <div class="mobile-header-top">
                     <div class="mobile-header-logo">
-                        <a href="/"><img src="{{asset("logos/new-logo-bg-4.png")}}" alt="logo" style="width: 11.25rem"/></a>
+                        <a href="/"><img src="{{asset($website->logo)}}" alt="logo" style="width: 11.25rem"/></a>
                     </div>
                     <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
                         <button class="close-style search-close">
@@ -533,7 +457,7 @@
                     </div>
                     <div class="mobile-header-info-wrap">
                         <div class="single-mobile-header-info">
-                            <a href="page-contact.html"><i class="fi-rs-marker"></i> Our location </a>
+                            <a href="{{route('contact.us')}}"><i class="fi-rs-marker"></i> Our location </a>
                         </div>
                         <div class="single-mobile-header-info">
                             @if (Auth::check())
@@ -543,16 +467,26 @@
                             @endif
                         </div>
                         <div class="single-mobile-header-info">
-                            <a href="#"><i class="fi-rs-headphones"></i>(+01) - 2345 - 6789 </a>
+                            <a href="#"><i class="fi-rs-headphones"></i>(+91) {{$website->phone}}</a>
                         </div>
                     </div>
                     <div class="mobile-social-icon mb-50">
                         <h6 class="mb-15">Follow Us</h6>
-                        <a href="#"><img src="{{("frontend/assets/imgs/theme/icons/icon-facebook-white.svg")}}" alt="" /></a>
-                        <a href="#"><img src="{{("frontend/assets/imgs/theme/icons/icon-twitter-white.svg")}}" alt="" /></a>
-                        <a href="#"><img src="{{("frontend/assets/imgs/theme/icons/icon-instagram-white.svg")}}" alt="" /></a>
-                        <a href="#"><img src="{{("frontend/assets/imgs/theme/icons/icon-pinterest-white.svg")}}" alt="" /></a>
-                        <a href="#"><img src="{{("frontend/assets/imgs/theme/icons/icon-youtube-white.svg")}}" alt="" /></a>
+                        @if ($website->facebook != NULL)
+                            <a href="{{$website->facebook}}"><img src="{{("frontend/assets/imgs/theme/icons/icon-facebook-white.svg")}}" alt="facebook" /></a>
+                        @endif
+                        @if ($website->instagram != NULL)
+                            <a href="{{$website->instagram}}"><img src="{{("frontend/assets/imgs/theme/icons/icon-instagram-white.svg")}}" alt="instagram" /></a>
+                        @endif
+                        @if ($website->twitter != NULL)
+                            <a href="{{$website->twitter}}"><img src="{{("frontend/assets/imgs/theme/icons/icon-twitter-white.svg")}}" alt="twitter" /></a>
+                        @endif
+                        @if ($website->youtube != NULL)
+                            <a href="{{$website->youtube}}"><img src="{{("frontend/assets/imgs/theme/icons/icon-youtube-white.svg")}}" alt="youtube" /></a>
+                        @endif
+                        {{-- @if ($website->linkedin != NULL)
+                            <a href="{{$website->linkedin}}"><img src="{{("frontend/assets/imgs/theme/icons/icon-linkedin-white.svg")}}" alt="linkedin" /></a>
+                        @endif --}}
                     </div>
                     <div class="site-copyright">Copyright 2021 © Roshan. All rights reserved. Powered by Roshan Kumar.</div>
                 </div>

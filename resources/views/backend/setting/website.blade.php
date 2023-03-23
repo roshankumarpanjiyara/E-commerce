@@ -68,7 +68,7 @@
                         <div class="card-body border-top p-9">
                             <div class="row mb-6">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label fw-bold fs-6">Icon</label>
+                                <label class="col-lg-4 col-form-label fw-bold fs-6 required">Icon</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-8">
@@ -101,7 +101,7 @@
 
                             <div class="row mb-6">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label fw-bold fs-6">Logo</label>
+                                <label class="col-lg-4 col-form-label fw-bold fs-6 required">Logo</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-8">
@@ -151,7 +151,7 @@
                             <!--begin::Input group-->
                             <div class="row mb-6">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Company Slogan</label>
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">Company Slogan</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-8 fv-row fv-plugins-icon-container">
@@ -221,6 +221,25 @@
                             <!--begin::Input group-->
                             <div class="row mb-6">
                                 <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">Mobile Promotion</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-lg-8 fv-row fv-plugins-icon-container">
+                                    <input type="text" name="mobile_promotion" class="form-control form-control-lg form-control-solid @error('mobile_promotion') is-invalid @enderror" placeholder="Mobile Promotion" value="{{$site->mobile_promotion}}" autocomplete="off">
+                                    <div class="form-text">Use
+                                        <code>&lt;strong&gt;</code>tags for bold word.</div>
+                                    @error('mobile_promotion')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="row mb-6">
+                                <!--begin::Label-->
                                 <label class="col-lg-4 col-form-label required fw-bold fs-6">Scroll Ads</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
@@ -240,7 +259,7 @@
                             <!--begin::Input group-->
                             <div class="row mb-6">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Facebook Link</label>
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">Facebook Link</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-8 fv-row fv-plugins-icon-container">
@@ -257,7 +276,7 @@
                             <!--begin::Input group-->
                             <div class="row mb-6">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Instagram Link</label>
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">Instagram Link</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-8 fv-row fv-plugins-icon-container">
@@ -274,7 +293,7 @@
                             <!--begin::Input group-->
                             <div class="row mb-6">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Twitter Link</label>
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">Twitter Link</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-8 fv-row fv-plugins-icon-container">
@@ -291,7 +310,7 @@
                             <!--begin::Input group-->
                             <div class="row mb-6">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Linkedin Link</label>
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">Linkedin Link</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-8 fv-row fv-plugins-icon-container">
@@ -308,7 +327,7 @@
                             <!--begin::Input group-->
                             <div class="row mb-6">
                                 <!--begin::Label-->
-                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Youtube Link</label>
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">Youtube Link</label>
                                 <!--end::Label-->
                                 <!--begin::Col-->
                                 <div class="col-lg-8 fv-row fv-plugins-icon-container">
