@@ -29,30 +29,43 @@
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <!--begin::Container-->
         <div id="kt_content_container" class="container-xxl">
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
             @php
                 use Carbon\Carbon;
                 use App\Models\Order;
+                use App\Models\User;
 
                 // current week
                 $currWeek = Carbon::now()->startOfWeek()->format('D, d F Y');
 
-                $currWeek_sales = Order::whereBetween('created_at', 
+                $currWeek_sales = Order::whereBetween('created_at',
                         [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
                     )->sum('amount');
-                
-                $currWeek_tax = Order::whereBetween('created_at', 
+
+                $currWeek_tax = Order::whereBetween('created_at',
                         [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
                     )->sum('tax');
 
                 $prevWeek = Carbon::now()->subWeek()->startOfWeek()->format('D, d F Y');
 
-                $prevWeek_sales = Order::whereBetween('created_at', 
+                $prevWeek_sales = Order::whereBetween('created_at',
                         [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]
                     )->sum('amount');
-                
-                $prevWeek_tax = Order::whereBetween('created_at', 
+
+                $prevWeek_tax = Order::whereBetween('created_at',
                         [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]
                     )->sum('tax');
+
+                if($prevWeek_sales != 0){
+                    $percentWeeklyGrowth = (($currWeek_sales - $prevWeek_sales)/$prevWeek_sales)*100;
+                }else{
+                    $percentWeeklyGrowth = 100;
+                }
+
+                $currWeek_sales = number_format($currWeek_sales,2,".",",");
+                $currWeek_tax = number_format($currWeek_tax,2,".",",");
+                $prevWeek_sales = number_format($prevWeek_sales,2,".",",");
+                $prevWeek_tax = number_format($prevWeek_tax,2,".",",");
 
                 // monthly sales
                 $currMonth = Carbon::now()->format('F');
@@ -75,6 +88,11 @@
                                 ->where('order_year',Carbon::now()->format('Y')-1)
                                 ->sum('tax');
 
+                $currMonth_sales = number_format($currMonth_sales,2,".",",");
+                $currMonth_tax = number_format($currMonth_tax,2,".",",");
+                $prevMonth_sales = number_format($prevMonth_sales,2,".",",");
+                $prevMonth_tax = number_format($prevMonth_tax,2,".",",");
+
                 //yearly sales
                 $currYear = Carbon::now()->format('Y');
 
@@ -88,8 +106,19 @@
 
                 $prevYear_tax = Order::where('order_year',Carbon::now()->format('Y')-1)->sum('tax');
 
+                if($prevYear_sales != 0){
+                    $percentYearlyGrowthSales = round((($currYear_sales - $prevYear_sales)/$prevYear_sales)*100,2);
+                }else{
+                    $percentYearlyGrowthSales = 100;
+                }
+
+                $currYear_sales = number_format($currYear_sales,2,".",",");
+                $currYear_tax = number_format($currYear_tax,2,".",",");
+                $prevYear_sales = number_format($prevYear_sales,2,".",",");
+                $prevYear_tax = number_format($prevYear_tax,2,".",",");
+
                 //total sales
-                $total_sales = Order::sum('amount');
+                $total_sales = number_format(Order::sum('amount'),2,".",",");
 
                 //delivered sales
                 $total_delivered_sales = Order::where('status','Delivered')->sum('amount');
@@ -102,7 +131,378 @@
 
                 $delivered_yearly_sales = Order::where('status','Delivered')
                                             ->where('order_year',Carbon::now()->format('Y'))->sum('amount');
+
+                $total_delivered_sales = number_format($total_delivered_sales,2,".",",");
+                $total_delivered_tax = number_format($total_delivered_tax,2,".",",");
+                $delivered_monthly_sales = number_format($delivered_monthly_sales,2,".",",");
+                $delivered_yearly_sales = number_format($delivered_yearly_sales,2,".",",");
+
+                //chart js
+                DB::statement("SET SQL_MODE=''");
+                $users = Order::select(DB::raw("COUNT(*) as count"), DB::raw("MONTHNAME(created_at) as month_name"))
+                    ->where('order_year', Carbon::now()->format('Y'))
+                    ->groupBy(DB::raw("Month(created_at)"))
+                    ->pluck('count', 'month_name');
+                $labels = $users->keys();
+                $data = $users->values();
+
+                //daily sales
+                $weekStart = Carbon::now()->startOfWeek(); // Get the start of the current week
+                $weekEnd = Carbon::now()->endOfWeek(); // Get the end of the current week
+
+                $sales = Order::whereBetween('created_at', [$weekStart, $weekEnd])
+                    ->selectRaw('DAYOFWEEK(created_at) as day_of_week, SUM(amount) as total_sales')
+                    ->groupBy(DB::raw("DAYOFWEEK(created_at)"))
+                    ->get();
+
+                $weekDays = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
+                $dailySales = [0,0,0,0,0,0,0];
+                $averageDailySales = 0;
+
+                foreach ($sales as $sale) {
+                    $dayOfWeek = $sale->day_of_week;
+                    $totalSales = $sale->total_sales;
+                    $dailySales[$dayOfWeek] = $totalSales;
+
+                    $averageDailySales += $totalSales;
+                }
+
+                $averageDailySales /= 7;
+
+                $newCustomerCurrentMonth = User::whereDate('created_at', '>=', Carbon::now()->startOfMonth())
+                    ->whereDate('created_at', '<=', Carbon::now()->endOfMonth())
+                    ->count();
+                $goalNewCustomerCurrentMonth = 100;
+                $percentReqForNewCustomer = (($goalNewCustomerCurrentMonth - $newCustomerCurrentMonth)/$goalNewCustomerCurrentMonth)*100;
+
+                $newOrderCurrentMonth = Order::whereDate('created_at', '>=', Carbon::now()->startOfMonth())
+                    ->whereDate('created_at', '<=', Carbon::now()->endOfMonth())
+                    ->count();
+
+                $newOrderPrevMonth = Order::whereDate('created_at', '>=', Carbon::now()->subMonth()->startOfMonth())
+                    ->whereDate('created_at', '<=', Carbon::now()->subMonth()->endOfMonth())
+                    ->count();
+
+                $goalForNewOrders = 1000;
+                $percentReqForNewOrders = (($goalForNewOrders - $newOrderCurrentMonth)/$goalForNewOrders)*100;
+
+                if($newOrderPrevMonth != 0){
+                    $percentMonthlyGrowthOrders = (($newOrderCurrentMonth - $newOrderPrevMonth)/$newOrderPrevMonth)*100;
+                }else{
+                    $percentMonthlyGrowthOrders = 100;
+                }
+
+                $categorySales = DB::table('categories')
+                    ->select('categories.name as category', DB::raw('SUM(order_items.qty * order_items.price) as total_sales'))
+                    ->join('products', 'categories.id', '=', 'products.category_id')
+                    ->join('order_items', 'products.id', '=', 'order_items.product_id')
+                    ->groupBy('categories.id')
+                    ->orderBy('total_sales', 'desc')
+                    ->take(3)
+                    ->get();
             @endphp
+
+            {{-- chart row --}}
+            <div class="row g-5 g-xl-10 mb-xl-10">
+                <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
+                    <!--begin::Card widget 4-->
+                    <div class="card card-flush h-md-50 mb-5 mb-xl-10">
+                        <!--begin::Header-->
+                        <div class="card-header pt-5">
+                            <!--begin::Title-->
+                            <div class="card-title d-flex flex-column">
+                                <!--begin::Info-->
+                                <div class="d-flex align-items-center">
+                                    <!--begin::Currency-->
+                                    <span class="fs-4 fw-bold text-gray-400 me-1 align-self-start">$</span>
+                                    <!--end::Currency-->
+                                    <!--begin::Amount-->
+                                    <span class="fs-2hx fw-bolder text-dark me-2 lh-1 ls-n2">{{$currYear_sales}}</span>
+                                    <!--end::Amount-->
+                                    <!--begin::Badge-->
+                                    @if ($percentYearlyGrowthSales >= 0)
+                                    <span class="badge badge-success fs-base">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+                                        <span class="svg-icon svg-icon-5 svg-icon-white ms-n1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1" transform="rotate(90 13 6)" fill="currentColor"></rect>
+                                                <path d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z" fill="currentColor"></path>
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->{{$percentYearlyGrowthSales}}%</span>
+                                    @else
+                                    <span class="badge badge-danger fs-base">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+                                        <span class="svg-icon svg-icon-5 svg-icon-white ms-n1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.5" x="11" y="18" width="13" height="2" rx="1" transform="rotate(-90 11 18)" fill="currentColor"/>
+                                                <path d="M11.4343 15.4343L7.25 11.25C6.83579 10.8358 6.16421 10.8358 5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75L11.2929 18.2929C11.6834 18.6834 12.3166 18.6834 12.7071 18.2929L18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25C17.8358 10.8358 17.1642 10.8358 16.75 11.25L12.5657 15.4343C12.2533 15.7467 11.7467 15.7467 11.4343 15.4343Z" fill="currentColor"/>
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->{{-1*$percentYearlyGrowthSales}}%</span>
+                                    @endif
+                                    <!--end::Badge-->
+                                </div>
+                                <!--end::Info-->
+                                <!--begin::Subtitle-->
+                                <span class="text-gray-400 pt-1 fw-bold fs-6">Yearly Sales</span>
+                                <!--end::Subtitle-->
+                            </div>
+                            <!--end::Title-->
+                        </div>
+                        <!--end::Header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-2 pb-4 d-flex align-items-center">
+                            <!--begin::Labels-->
+                            <div class="d-flex flex-column content-justify-center w-100">
+                                <!--begin::Label-->
+                                <div class="d-flex fs-6 fw-bold align-items-center">
+                                    <!--begin::Bullet-->
+                                    <div class="bullet w-8px h-6px rounded-2 bg-danger me-3"></div>
+                                    <!--end::Bullet-->
+                                    <!--begin::Label-->
+                                    <div class="text-gray-500 flex-grow-1 me-4">{{$categorySales[0]->category}}</div>
+                                    <!--end::Label-->
+                                    <!--begin::Stats-->
+                                    <div class="fw-boldest text-gray-700 text-xxl-end">${{ number_format($categorySales[0]->total_sales,2,".",",") }}</div>
+                                    <!--end::Stats-->
+                                </div>
+                                <!--end::Label-->
+                                <!--begin::Label-->
+                                <div class="d-flex fs-6 fw-bold align-items-center my-3">
+                                    <!--begin::Bullet-->
+                                    <div class="bullet w-8px h-6px rounded-2 bg-primary me-3"></div>
+                                    <!--end::Bullet-->
+                                    <!--begin::Label-->
+                                    <div class="text-gray-500 flex-grow-1 me-4">{{$categorySales[1]->category}}</div>
+                                    <!--end::Label-->
+                                    <!--begin::Stats-->
+                                    <div class="fw-boldest text-gray-700 text-xxl-end">${{ number_format($categorySales[1]->total_sales,2,".",",") }}</div>
+                                    <!--end::Stats-->
+                                </div>
+                                <!--end::Label-->
+                                <!--begin::Label-->
+                                <div class="d-flex fs-6 fw-bold align-items-center">
+                                    <!--begin::Bullet-->
+                                    <div class="bullet w-8px h-6px rounded-2 me-3" style="background-color: #E4E6EF"></div>
+                                    <!--end::Bullet-->
+                                    <!--begin::Label-->
+                                    <div class="text-gray-500 flex-grow-1 me-4">{{ $categorySales[2]->total_sales }}</div>
+                                    <!--end::Label-->
+                                    <!--begin::Stats-->
+                                    <div class="fw-boldest text-gray-700 text-xxl-end">${{ number_format($categorySales[2]->total_sales,2,".",",") }}</div>
+                                    <!--end::Stats-->
+                                </div>
+                                <!--end::Label-->
+                            </div>
+                            <!--end::Labels-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card widget 4-->
+                    <!--begin::Card widget 5-->
+                    <div class="card card-flush h-md-50 mb-xl-10">
+                        <!--begin::Header-->
+                        <div class="card-header pt-5">
+                            <!--begin::Title-->
+                            <div class="card-title d-flex flex-column">
+                                <!--begin::Info-->
+                                <div class="d-flex align-items-center">
+                                    <!--begin::Amount-->
+                                    <span class="fs-2hx fw-bolder text-dark me-2 lh-1 ls-n2">{{$newOrderCurrentMonth}}</span>
+                                    <!--end::Amount-->
+                                    <!--begin::Badge-->
+                                    @if ($percentMonthlyGrowthOrders >= 0)
+                                    <span class="badge badge-success fs-base">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+                                        <span class="svg-icon svg-icon-5 svg-icon-white ms-n1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1" transform="rotate(90 13 6)" fill="currentColor"></rect>
+                                                <path d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z" fill="currentColor"></path>
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->{{$percentMonthlyGrowthOrders}}%</span>
+                                    @else
+                                    <span class="badge badge-danger fs-base">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+                                        <span class="svg-icon svg-icon-5 svg-icon-white ms-n1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.5" x="11" y="18" width="13" height="2" rx="1" transform="rotate(-90 11 18)" fill="currentColor"/>
+                                                <path d="M11.4343 15.4343L7.25 11.25C6.83579 10.8358 6.16421 10.8358 5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75L11.2929 18.2929C11.6834 18.6834 12.3166 18.6834 12.7071 18.2929L18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25C17.8358 10.8358 17.1642 10.8358 16.75 11.25L12.5657 15.4343C12.2533 15.7467 11.7467 15.7467 11.4343 15.4343Z" fill="currentColor"/>
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->{{-1*$percentMonthlyGrowthOrders}}%</span>
+                                    @endif
+                                    <!--end::Badge-->
+                                </div>
+                                <!--end::Info-->
+                                <!--begin::Subtitle-->
+                                <span class="text-gray-400 pt-1 fw-bold fs-6">Orders This Month</span>
+                                <!--end::Subtitle-->
+                            </div>
+                            <!--end::Title-->
+                        </div>
+                        <!--end::Header-->
+                        <!--begin::Card body-->
+                        <div class="card-body d-flex align-items-end pt-0">
+                            <!--begin::Progress-->
+                            <div class="d-flex align-items-center flex-column mt-3 w-100">
+                                <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                    <span class="fw-boldest fs-6 text-dark">{{$goalForNewOrders - $newOrderCurrentMonth}} to Goal</span>
+                                    <span class="fw-bolder fs-6 text-gray-400">{{round(100-$percentReqForNewOrders,2)}}%</span>
+                                </div>
+                                <div class="h-8px mx-3 w-100 bg-light-success rounded">
+                                    <div class="bg-success rounded h-8px" role="progressbar" style="width: {{100 - $percentReqForNewOrders}}%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <!--end::Progress-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card widget 5-->
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
+                    <!--begin::Card widget 6-->
+                    <div class="card card-flush h-md-50 mb-5 mb-xl-10">
+                        <!--begin::Header-->
+                        <div class="card-header pt-5">
+                            <!--begin::Title-->
+                            <div class="card-title d-flex flex-column">
+                                <!--begin::Info-->
+                                <div class="d-flex align-items-center">
+                                    <!--begin::Currency-->
+                                    <span class="fs-4 fw-bold text-gray-400 me-1 align-self-start">$</span>
+                                    <!--end::Currency-->
+                                    <!--begin::Amount-->
+                                    <span class="fs-2hx fw-bolder text-dark me-2 lh-1 ls-n2">{{number_format($averageDailySales,2,".",",")}}</span>
+                                    <!--end::Amount-->
+                                    <!--begin::Badge-->
+                                    @if ($percentWeeklyGrowth >= 0)
+                                    <span class="badge badge-success fs-base">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+                                        <span class="svg-icon svg-icon-5 svg-icon-white ms-n1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1" transform="rotate(90 13 6)" fill="currentColor"></rect>
+                                                <path d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z" fill="currentColor"></path>
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->{{round($percentWeeklyGrowth)}}%</span>
+                                    @else
+                                    <span class="badge badge-danger fs-base">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+                                        <span class="svg-icon svg-icon-5 svg-icon-white ms-n1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.5" x="11" y="18" width="13" height="2" rx="1" transform="rotate(-90 11 18)" fill="currentColor"/>
+                                                <path d="M11.4343 15.4343L7.25 11.25C6.83579 10.8358 6.16421 10.8358 5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75L11.2929 18.2929C11.6834 18.6834 12.3166 18.6834 12.7071 18.2929L18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25C17.8358 10.8358 17.1642 10.8358 16.75 11.25L12.5657 15.4343C12.2533 15.7467 11.7467 15.7467 11.4343 15.4343Z" fill="currentColor"/>
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->{{round(-1*$percentWeeklyGrowth)}}%</span>
+                                    @endif
+                                    <!--end::Badge-->
+                                </div>
+                                <!--end::Info-->
+                                <!--begin::Subtitle-->
+                                <span class="text-gray-400 pt-1 fw-bold fs-6">Average Daily Sales</span>
+                                <!--end::Subtitle-->
+                            </div>
+                            <!--end::Title-->
+                        </div>
+                        <!--end::Header-->
+                        <!--begin::Card body-->
+                        <div class="card-body d-flex align-items-end px-0 pb-0">
+                            <!--begin::Chart-->
+                            <div class="w-100">
+                                <canvas id="dailySalesChart"></canvas>
+                                  <!-- Custom Axis -->
+                                    <div class="axis">
+                                        @foreach ($weekDays as $key=>$day)
+                                            <div class="tick">
+                                                {{$day}}
+                                                <span class="value value--this">${{round($dailySales[$key++])}}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                            </div>
+                            <!--end::Chart-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card widget 6-->
+                    <!--begin::Card widget 7-->
+                    <div class="card card-flush h-md-50 mb-xl-10">
+                        <!--begin::Header-->
+                        <div class="card-header pt-5">
+                            <!--begin::Title-->
+                            <div class="card-title d-flex flex-column">
+                                <!--begin::Amount-->
+                                <span class="fs-2hx fw-bolder text-dark me-2 lh-1 ls-n2">{{$newCustomerCurrentMonth}}</span>
+                                <!--end::Amount-->
+                                <!--begin::Subtitle-->
+                                <span class="text-gray-400 pt-1 fw-bold fs-6">New Customers This Month</span>
+                                <!--end::Subtitle-->
+                            </div>
+                            <!--end::Title-->
+                        </div>
+                        <!--end::Header-->
+                         <!--begin::Card body-->
+                         <div class="card-body d-flex align-items-end pt-0">
+                            <!--begin::Progress-->
+                            <div class="d-flex align-items-center flex-column mt-3 w-100">
+                                <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                    <span class="fw-boldest fs-6 text-dark">{{$goalNewCustomerCurrentMonth - $newCustomerCurrentMonth}} to Goal</span>
+                                    <span class="fw-bolder fs-6 text-gray-400">{{100 - $percentReqForNewCustomer}}%</span>
+                                </div>
+                                <div class="h-8px mx-3 w-100 bg-light-success rounded">
+                                    <div class="bg-success rounded h-8px" role="progressbar" style="width: {{100 - $percentReqForNewCustomer}}%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <!--end::Progress-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card widget 7-->
+                </div>
+                <!--begin::Col-->
+                <div class="col-lg-12 col-xl-12 col-xxl-6 mb-5 mb-xl-0">
+                    <!--begin::Chart widget 3-->
+                    <div class="card card-flush overflow-hidden h-md-100">
+                        <!--begin::Header-->
+                        <div class="card-header py-5">
+                            <!--begin::Title-->
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bolder text-dark">Monthly Order Record</span>
+                            </h3>
+                            <!--end::Title-->
+                        </div>
+                        <!--end::Header-->
+                        <!--begin::Card body-->
+                        <div class="card-body d-flex justify-content-between flex-column pb-1 px-0">
+                            <!--begin::Statistics-->
+                            <div class="px-9 mb-5">
+                                <!--begin::Statistics-->
+                                <div class="d-flex mb-2">
+                                    <span class="fs-4 fw-bold text-gray-400 me-1">$</span>
+                                    <span class="fs-2hx fw-bolder text-gray-800 me-2 lh-1 ls-n2">{{$currMonth_sales}}</span>
+                                </div>
+                                <!--end::Statistics-->
+                                <!--begin::Description-->
+                                <span class="fs-6 fw-bold text-gray-400">{{$currMonth}},{{$currYear}} Sales</span>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Statistics-->
+                            <!--begin::Chart-->
+                            <div class="min-h-auto ps-4 pe-6 pt-0" style="height: 300px; min-height: 315px;">
+                                <canvas id="montlyOrderChart"></canvas>
+                            </div>
+                            <!--end::Chart-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Chart widget 3-->
+                </div>
+                <!--end::Col-->
+            </div>
+
             {{-- 1st row --}}
             <div class="row g-5 g-xl-8">
                 <!--begin::Col-->
@@ -1455,14 +1855,6 @@
                                         <!--begin::Label-->
                                         <div class="d-flex align-items-center">
                                             <div class="fw-bolder fs-5 text-gray-800 pe-1">{{App\Models\Order::where('status','Delivered')->count()}}</div>
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
-                                            <span class="svg-icon svg-icon-5 svg-icon-success ms-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                    <rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1" transform="rotate(90 13 6)" fill="currentColor"></rect>
-                                                    <path d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z" fill="currentColor"></path>
-                                                </svg>
-                                            </span>
-                                            <!--end::Svg Icon-->
                                         </div>
                                         <!--end::Label-->
                                     </div>
@@ -1497,14 +1889,6 @@
                                         <!--begin::Label-->
                                         <div class="d-flex align-items-center">
                                             <div class="fw-bolder fs-5 text-gray-800 pe-1">${{$total_delivered_tax}}</div>
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr065.svg-->
-                                            <span class="svg-icon svg-icon-5 svg-icon-danger ms-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                    <rect opacity="0.5" x="11" y="18" width="13" height="2" rx="1" transform="rotate(-90 11 18)" fill="currentColor"></rect>
-                                                    <path d="M11.4343 15.4343L7.25 11.25C6.83579 10.8358 6.16421 10.8358 5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75L11.2929 18.2929C11.6834 18.6834 12.3166 18.6834 12.7071 18.2929L18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25C17.8358 10.8358 17.1642 10.8358 16.75 11.25L12.5657 15.4343C12.2533 15.7467 11.7467 15.7467 11.4343 15.4343Z" fill="currentColor"></path>
-                                                </svg>
-                                            </span>
-                                            <!--end::Svg Icon-->
                                         </div>
                                         <!--end::Label-->
                                     </div>
@@ -1537,14 +1921,6 @@
                                         <!--begin::Label-->
                                         <div class="d-flex align-items-center">
                                             <div class="fw-bolder fs-5 text-gray-800 pe-1">${{$delivered_monthly_sales}}</div>
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
-                                            <span class="svg-icon svg-icon-5 svg-icon-success ms-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                    <rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1" transform="rotate(90 13 6)" fill="currentColor"></rect>
-                                                    <path d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z" fill="currentColor"></path>
-                                                </svg>
-                                            </span>
-                                            <!--end::Svg Icon-->
                                         </div>
                                         <!--end::Label-->
                                     </div>
@@ -1580,14 +1956,6 @@
                                         <!--begin::Label-->
                                         <div class="d-flex align-items-center">
                                             <div class="fw-bolder fs-5 text-gray-800 pe-1">${{$delivered_yearly_sales}}</div>
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr065.svg-->
-                                            <span class="svg-icon svg-icon-5 svg-icon-danger ms-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                    <rect opacity="0.5" x="11" y="18" width="13" height="2" rx="1" transform="rotate(-90 11 18)" fill="currentColor"></rect>
-                                                    <path d="M11.4343 15.4343L7.25 11.25C6.83579 10.8358 6.16421 10.8358 5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75L11.2929 18.2929C11.6834 18.6834 12.3166 18.6834 12.7071 18.2929L18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25C17.8358 10.8358 17.1642 10.8358 16.75 11.25L12.5657 15.4343C12.2533 15.7467 11.7467 15.7467 11.4343 15.4343Z" fill="currentColor"></path>
-                                                </svg>
-                                            </span>
-                                            <!--end::Svg Icon-->
                                         </div>
                                         <!--end::Label-->
                                     </div>
@@ -1609,3 +1977,174 @@
     <!--end::Post-->
 </div>
 <!--end::Content-->
+
+<style>
+    .axis {
+    position: absolute;
+    color: #fff;
+    z-index: 1;
+    text-transform: uppercase;
+    display: flex;
+    width: 100%;
+    bottom: 0;
+    }
+
+    .axis .tick {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    opacity: 0.2;
+    font-size: 11px;
+    text-align: center;
+    line-height: 40px;
+    padding-top: 100px;
+    }
+
+    .axis .tick:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .axis .tick .value {
+    transform: translateY(-40px);
+    transition: 0.3s transform;
+    position: absolute;
+    top: 20px;
+    color: #444;
+    border-radius: 2px;
+    width: 100%;
+    line-height: 20px;
+    }
+
+    .axis .tick:hover .value.value--this {
+    transform: translateY(0);
+    display: block;
+    }
+
+    .value.value--this {
+    color: #5555FF;
+    font-weight: bold;
+    }
+
+</style>
+
+
+<script type="text/javascript">
+    var dailyChart = document.getElementById("dailySalesChart");
+
+    // Gradient color - this week
+    var gradientThisWeek = dailyChart.getContext('2d').createLinearGradient(0, 0, 0, 150);
+    gradientThisWeek.addColorStop(0, '#5555FF');
+    gradientThisWeek.addColorStop(1, '#9787FF');
+
+    var daily_sales_array = [];
+    daily_sales_array = {{Js::from($dailySales)}}
+
+    var daily_config = {
+        type: 'line',
+        data: {
+            labels: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+            datasets: [
+            {
+                label:"",
+                data: daily_sales_array,
+                // backgroundColor: gradientThisWeek,
+                borderColor: '#5555FF',
+                pointBackgroundColor: '#5555FF',
+                pointBorderColor: '#5555FF',
+                lineTension: 0.40,
+            },
+            ]
+        },
+        options: {
+                elements: {
+                point: {
+                radius: 0,
+                hitRadius: 5,
+                hoverRadius: 5
+            }
+            },
+                legend: {
+                    display: false,
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false,
+                    },
+                    display: true,
+                },
+                y: {
+                    grid: {
+                        display: false,
+                    },
+                    display: false,
+                    ticks: {
+                        beginAtZero: true,
+                    },
+                }
+            }
+        },
+    };
+
+    window.chart = new Chart(dailyChart, daily_config);
+</script>
+
+{{-- line chart --}}
+<script type="text/javascript">
+
+    var labels =  {{ Js::from($labels) }};
+    var orders =  {{ Js::from($data) }};
+
+    const data = {
+      labels: labels,
+      datasets: [{
+        label: 'Orders',
+        // backgroundColor: 'rgb(114, 57, 231)',
+        // borderColor: 'rgb(114, 57, 231)',
+        lineTension: 0.3,
+        backgroundColor: "rgba(2,117,216,0.2)",
+        borderColor: "rgba(2,117,216,1)",
+        pointRadius: 5,
+        pointBackgroundColor: "rgba(2,117,216,1)",
+        pointBorderColor: "rgba(255,255,255,0.8)",
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "rgba(2,117,216,1)",
+        pointHitRadius: 20,
+        pointBorderWidth: 2,
+        data: orders,
+      }]
+    };
+
+    const montly_order_config = {
+        type: 'line',
+        data: data,
+        options: {
+            scales: {
+                x: {
+                    grid: {
+                        display: false,
+                    },
+                    display: true,
+                },
+                y: {
+                    grid: {
+                        display: false,
+                    },
+                    display: false,
+                    beginAtZero: true,
+                },
+            },
+            legend: {
+                display: false
+            }
+        }
+    };
+
+    const monthly_orderChart = new Chart(
+      document.getElementById('montlyOrderChart').getContext('2d'),
+      montly_order_config
+    );
+    monthly_orderChart.resize();
+
+</script>

@@ -31,5 +31,6 @@
 		<link href="{{asset("backend/dist/assets/css/style.bundle.css")}}" rel="stylesheet" type="text/css" />
 		<!--end::Global Stylesheets Bundle-->
 		<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+
 	</head>
 	<!--end::Head-->

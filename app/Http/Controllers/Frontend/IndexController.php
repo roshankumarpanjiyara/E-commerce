@@ -9,10 +9,13 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Contact;
 use App\Models\MultiImage;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\Slider;
 use App\Models\SubCategory;
 use App\Models\SubSubCategory;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -167,7 +170,7 @@ class IndexController extends Controller
             $products = Product::where('product_name','LIKE','%'.$item.'%')
             ->limit(10)
             ->get();
-            
+
             return view('frontend.pages.product_search',compact('products'));
         }
     }
@@ -206,7 +209,7 @@ class IndexController extends Controller
             ->latest()
             ->limit(10)
             ->get();
-            
+
             return view('frontend.blog.blog_search',compact('posts'));
         }
     }
@@ -227,15 +230,44 @@ class IndexController extends Controller
     }
 
     public function test(){
+        // $result = Order::whereBetween('created_at', [Carbon::now()->subDays(7), Carbon::now()])->count();
+        // $result = Order::whereBetween('created_at', [Carbon::now()->startOfWeek(),  Carbon::now()->endOfWeek()])
+        //          ->orderBy('created_at', 'desc')
+        //          ->get()
+        //          ->map(function($record) {
+        //              return [
+        //                  'day' => $record->created_at->format('l'),
+        //                  'created_at' => ($record->created_at->format('d'))%7
+        //              ];
+                //  });
+        // $weekStart = Carbon::now()->startOfWeek(); // Get the start of the current week
+        // $weekEnd = Carbon::now()->endOfWeek(); // Get the end of the current week
+
+        // $sales = Order::whereBetween('created_at', [$weekStart, $weekEnd])
+        //      ->selectRaw('DAYOFWEEK(created_at) as day_of_week, SUM(amount) as total_sales')
+        //      ->groupBy(DB::raw("DAYOFWEEK(created_at)"))
+        //      ->get();
+        // $dailySales = [0,0,0,0,0,0,0];
+        // foreach ($sales as $sale) {
+        //     $dayOfWeek = $sale->day_of_week;
+        //     $totalSales = $sale->total_sales;
+        //     $dailySales[$dayOfWeek] = $totalSales;
+        // }
+        // $users = User::whereDate('created_at', '>=', Carbon::now()->startOfMonth())
+        //      ->whereDate('created_at', '<=', Carbon::now()->endOfMonth())
+        //      ->get();
         DB::statement("SET SQL_MODE=''");
-        $result = Category::select('categories.*', DB::raw('count(products.id) as posts_count'))
-        ->with('product')
-		->leftJoin('products', 'products.category_id', 'categories.id')
-		->groupBy('categories.id')
-		->orderBy('posts_count', 'desc')
-		->limit(2)
-		->get();
-        // dd($result);
-        return view('frontend.test',compact('result'));
+
+        $categorySales = DB::table('categories')
+            ->select('categories.name as category', DB::raw('SUM(order_items.qty * order_items.price) as total_sales'))
+            ->join('products', 'categories.id', '=', 'products.category_id')
+            ->join('order_items', 'products.id', '=', 'order_items.product_id')
+            ->groupBy('categories.id')
+            ->orderBy('total_sales', 'desc')
+            ->take(3)
+            ->get();
+
+        dd($categorySales);
+        // return view('frontend.test',compact('result'));
     }
 }

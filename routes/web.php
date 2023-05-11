@@ -15,6 +15,7 @@ use App\Http\Controllers\User\UserCartController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\StripeController;
 use App\Http\Controllers\User\UserOrderController;
+use App\Http\Controllers\Backend\Setting\ChartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +56,7 @@ Route::controller(IndexController::class)->group(function(){
     Route::get('/blog/index','blogIndex')->name('blog.index');
     Route::get('/blog/categories/{slug}/{id}/index','blogCategoryIndex')->name('blog.category.index');
     Route::get('/blog/{slug}/{id}/show','showBlog')->name('blog.show');
-    
+
     //blog search
     Route::post('/blog/post-search','blogSearch');
     Route::post('/blog/post-search/index','blogSearchIndex')->name('blog.search');
@@ -180,6 +181,7 @@ Route::middleware(['auth:sanctum,admin', config('jetstream.auth_session'), 'veri
     //admin routes
     Route::get('admin/logout', [AdminController::class, 'destroy'])->name('admin.logout');
     Route::prefix('admin/dashboard')->group(function(){
+
         //admin
         Route::controller(AdminProfileController::class)->group(function(){
             //admin prodile
@@ -350,7 +352,7 @@ Route::middleware(['auth:sanctum,admin', config('jetstream.auth_session'), 'veri
 
             //invoice download
             Route::get('/orders/invoice/{id}/download/','orderInvoiceDownload')->name('order.invoice.download');
-            
+
             //cancel reason
             Route::post('/orders/cancel/{id}/reason','cancelOrderReason')->name('cancel.order.reason');
         });
@@ -376,14 +378,14 @@ Route::middleware(['auth:sanctum,admin', config('jetstream.auth_session'), 'veri
         });
 
         //blog
-        
+
         //category
         Route::controller(App\Http\Controllers\Backend\blog\CategoryController::class)->prefix('blog')->group(function(){
             Route::get('/categorys-create','create')->name('blog_categorys.index');
             Route::post('/categorys-store','store')->name('blog_categorys.store');
             Route::get('/categorys-destroy/{id}','destroy')->name('blog_categorys.destroy');
         });
-        
+
         //post
         Route::controller(App\Http\Controllers\Backend\blog\PostController::class)->prefix('blog')->group(function(){
             Route::get('/posts/create','create')->name('blog.posts.create');

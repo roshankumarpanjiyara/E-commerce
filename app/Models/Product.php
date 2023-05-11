@@ -8,6 +8,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\SubCategory;
 use App\Models\SubSubCategory;
+use App\Models\OrderItem;
 
 class Product extends Model
 {
@@ -28,5 +29,9 @@ class Product extends Model
 
     public function subsubcategory(){
     	return $this->belongsTo(SubSubCategory::class,'subsubcategory_id','id');
+    }
+
+    public function orderItems(){
+        return $this->hasMany(OrderItem::class);
     }
 }
