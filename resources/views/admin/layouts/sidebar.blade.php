@@ -1,3 +1,8 @@
+@php
+use App\Models\WebsiteSetting;
+
+$website = WebsiteSetting::find(1);
+@endphp
 <!--begin::Body-->
 <body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed aside-enabled aside-fixed" style="--kt-toolbar-height:55px;--kt-toolbar-height-tablet-and-mobile:55px">
     <!--begin::Main-->
@@ -11,7 +16,7 @@
                 <div class="aside-logo flex-column-auto" id="kt_aside_logo">
                     <!--begin::Logo-->
                     <a href="{{route("admin_dashboard")}}">
-                        <img alt="Logo" src="{{asset("logos/logo-bg-1.png")}}" class="h-80px w-200px logo" />
+                        <img alt="Logo" src="{{asset($website->logo)}}" class="h-60px w-180px logo" />
                     </a>
                     <!--end::Logo-->
                     <!--begin::Aside toggler-->
@@ -700,7 +705,7 @@
                         <!--begin::Mobile logo-->
                         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
                             <a href="{{route("admin_dashboard")}}" class="d-lg-none">
-                                <img alt="Logo" src="{{asset("logos/logo-small-1.png")}}" class="h-30px" />
+                                <img alt="Logo" src="{{asset($website->icon)}}" class="h-40px" />
                             </a>
                         </div>
                         <!--end::Mobile logo-->
