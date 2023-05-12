@@ -375,6 +375,40 @@
                                 <!--end::Col-->
                             </div>
                             <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="row mb-6">
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Main Color Light</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-lg-8 fv-row fv-plugins-icon-container">
+                                    <input type="color" name="main_color_light" class="form-control form-control-lg form-control-solid @error('main_color_light') is-invalid @enderror" placeholder="Main Color Light" value="{{$site->main_color_light}}" autocomplete="off">
+                                    @error('main_color_light')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="row mb-6">
+                                <!--begin::Label-->
+                                <label class="col-lg-4 col-form-label required fw-bold fs-6">Main Color Button</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-lg-8 fv-row fv-plugins-icon-container">
+                                    <input type="color" name="main_color_btn" class="form-control form-control-lg form-control-solid @error('main_color_btn') is-invalid @enderror" placeholder="Main Color Button" value="{{$site->main_color_btn}}" autocomplete="off">
+                                    @error('main_color_btn')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Input group-->
                         </div>
                         <!--end::Card body-->
                         <!--begin::Actions-->

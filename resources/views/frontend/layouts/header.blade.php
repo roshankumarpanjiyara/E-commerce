@@ -7,7 +7,7 @@
 
             $seo = SeoSetting::find(1);
             $website = WebsiteSetting::find(1);
-        @endphp 
+        @endphp
         <meta charset="utf-8" />
         <title>@yield('main_title')E-Commerce</title>
         <meta http-equiv="x-ua-compatible" content="ie=edge" />
@@ -25,7 +25,7 @@
         <script>
             {{ $seo->google_analytics }}
         </script>
-        
+
         <!-- Template CSS -->
         <link rel="stylesheet" href="{{asset("frontend/assets/css/plugins/animate.min.css")}}"/>
         <link rel="stylesheet" href="{{asset("frontend/assets/css/main.css?v=4.0")}}"/>
@@ -41,6 +41,10 @@
                 /* --main-color: #3BB77E; */
                 /* --hover-color: #FDC040; */
                 --main-color: {{$website->main_color}};
+                /* --main-color-light: #f8f9de; */
+                --main-color-light: {{$website->main_color_light}};
+                /* --main-color-btn: #29a56c; */
+                --main-color-btn: {{$website->main_color_btn}};
                 --hover-color: {{$website->hover_color}};
             }
         </style>
@@ -508,7 +512,7 @@
             }
 
             .product-cart-wrap .product-content-wrap .product-brand a:hover {
-                color: #3BB77E;
+                color: var(--main-color);
             }
 
             .product-cart-wrap .product-card-bottom .out-of-stock {
@@ -594,8 +598,8 @@
             .answersearch p:last-child{border: none;}
 
             .answersearch p:hover{
-                color: #583101;
-                background-color: #ffecd5;
-                border-left: 3px solid #fc8902;
+                color: var(--main-color);
+                background-color: var(--main-color-light);
+                border-left: 3px solid var(--hover-color);
             }
         </style>

@@ -15,7 +15,7 @@ class WebsiteController extends Controller
     	$site = WebsiteSetting::find(1);
     	return view('backend.setting.website',compact('site'));
     }
- 
+
 
     public function websiteSettingUpdate(Request $request){
 
@@ -30,6 +30,8 @@ class WebsiteController extends Controller
             'company_address'=>'required|max:100',
             'main_color' => 'required',
             'hover_color' => 'required',
+            'main_color_light' => 'required',
+            'main_color_btn' => 'required',
         ]);
 
         $data = $request->all();
@@ -65,5 +67,5 @@ class WebsiteController extends Controller
         toast('Site Setting Updated!','success')->autoClose(5000)->width('450px')->timerProgressBar();
         return Redirect()->back();
 
-    } // end method 
+    } // end method
 }

@@ -15,22 +15,24 @@ return new class extends Migration
     {
         Schema::create('website_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('icon'); 
-            $table->string('logo'); 
-            $table->string('phone'); 
-            $table->string('email'); 
-            $table->string('company_name'); 
-            $table->string('company_slogan')->nullable(); 
-            $table->string('company_address'); 
-            $table->string('mobile_promotion')->nullable(); 
-            $table->text('scroll_ads')->nullable(); 
-            $table->string('facebook')->nullable(); 
-            $table->string('instagram')->nullable(); 
-            $table->string('twitter')->nullable(); 
-            $table->string('linkedin')->nullable(); 
-            $table->string('youtube')->nullable(); 
-            $table->string('main_color'); 
-            $table->string('hover_color'); 
+            $table->string('icon');
+            $table->string('logo');
+            $table->string('phone');
+            $table->string('email');
+            $table->string('company_name');
+            $table->string('company_slogan')->nullable();
+            $table->string('company_address');
+            $table->string('mobile_promotion')->nullable();
+            $table->text('scroll_ads')->nullable();
+            $table->string('facebook')->nullable();
+            $table->string('instagram')->nullable();
+            $table->string('twitter')->nullable();
+            $table->string('linkedin')->nullable();
+            $table->string('youtube')->nullable();
+            $table->string('main_color');
+            $table->string('hover_color');
+            $table->string('main_color_light');
+            $table->string('main_color_btn');
             $table->timestamps();
         });
     }

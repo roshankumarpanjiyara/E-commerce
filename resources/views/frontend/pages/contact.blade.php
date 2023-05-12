@@ -2,6 +2,11 @@
 @section('main_title')
     Contact Us |
 @endsection
+@php
+    use App\Models\WebsiteSetting;
+
+    $website = WebsiteSetting::findOrFail(1);
+@endphp
 @section('content')
     <main class="main pages">
         <div class="page-header breadcrumb-wrap">
@@ -54,27 +59,15 @@
                             <div class="row mb-60">
                                 <div class="col-md-4 mb-4 mb-md-0">
                                     <h4 class="mb-15 text-brand">Office</h4>
-                                    205 North Michigan Avenue, Suite 810<br />
-                                    Chicago, 60601, USA<br />
-                                    <abbr title="Phone">Phone:</abbr> (123) 456-7890<br />
-                                    <abbr title="Email">Email: </abbr>contact@Evara.com<br />
-                                    
+                                    {{$website->company_address}}<br />
+                                    <abbr title="Phone">Phone:</abbr> (+91) {{$website->phone}}<br />
+                                    <abbr title="Email">Email: </abbr>{{$website->email}}<br />
                                 </div>
                                 <div class="col-md-4 mb-4 mb-md-0">
-                                    <h4 class="mb-15 text-brand">Studio</h4>
-                                    205 North Michigan Avenue, Suite 810<br />
-                                    Chicago, 60601, USA<br />
-                                    <abbr title="Phone">Phone:</abbr> (123) 456-7890<br />
-                                    <abbr title="Email">Email: </abbr>contact@Evara.com<br />
-                                    
-                                </div>
-                                <div class="col-md-4">
-                                    <h4 class="mb-15 text-brand">Shop</h4>
-                                    205 North Michigan Avenue, Suite 810<br />
-                                    Chicago, 60601, USA<br />
-                                    <abbr title="Phone">Phone:</abbr> (123) 456-7890<br />
-                                    <abbr title="Email">Email: </abbr>contact@Evara.com<br />
-                                    
+                                    <h4 class="mb-15 text-brand">Office</h4>
+                                    {{$website->company_address}}<br />
+                                    <abbr title="Phone">Phone:</abbr> (+91) {{$website->phone}}<br />
+                                    <abbr title="Email">Email: </abbr>{{$website->email}}<br />
                                 </div>
                             </div>
                             <div class="row">
@@ -102,7 +95,7 @@
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
-                                                        @enderror   
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6 col-md-6">
