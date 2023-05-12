@@ -2,6 +2,11 @@
 @section('main_title')
     {!! $brand->name !!} |
 @endsection
+@php
+    use App\Models\WebsiteSetting;
+
+    $website = WebsiteSetting::findOrFail(1);
+@endphp
 @section('content')
 <main class="main">
     <div class="page-header breadcrumb-wrap">
@@ -75,29 +80,37 @@
                                         <a aria-label="Add To Wishlist" class="action-btn" id="{{$product->id}}" onclick="addToWishlist(this.id)"><i class="fi-rs-heart"></i></a>
                                         <a aria-label="Quick view" class="action-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal" id="{{$product->id}}" onclick="productView(this.id)"><i class="fi-rs-eye"></i></a>
                                     </div>
-                                    @if ($product->discount_price)
-                                        <div class="product-badges product-badges-position product-badges-mrg">
-                                            <span class="best">
-                                                @php
-                                                    $amount = $product->base_price - $product->discount_price;
-                                                    $discount = ($amount/$product->base_price) * 100;
-                                                @endphp
-                                                -{{round($discount)}}%
-                                            </span>
-                                        </div>
-                                    @elseif ($product->hot_deal)
-                                        <div class="product-badges product-badges-position product-badges-mrg">
-                                            <span class="hot">
-                                                Hot
-                                            </span>
-                                        </div>
-                                    @elseif ($product->special_deal)
-                                        <div class="product-badges product-badges-position product-badges-mrg">
-                                            <span class="sale">
-                                                Sale
-                                            </span>
-                                        </div>
-                                    @endif
+                                    @if ($product->product_qty == 0)
+                                            <div class="product-badges product-badges-position product-badges-mrg">
+                                                <span class="hot">
+                                                    Out Of Stock
+                                                </span>
+                                            </div>
+                                        @else
+                                            @if ($product->discount_price)
+                                                <div class="product-badges product-badges-position product-badges-mrg">
+                                                    <span class="best">
+                                                        @php
+                                                            $amount = $product->base_price - $product->discount_price;
+                                                            $discount = ($amount/$product->base_price) * 100;
+                                                        @endphp
+                                                        -{{round($discount)}}%
+                                                    </span>
+                                                </div>
+                                            @elseif ($product->hot_deal)
+                                                <div class="product-badges product-badges-position product-badges-mrg">
+                                                    <span class="hot">
+                                                        Hot
+                                                    </span>
+                                                </div>
+                                            @elseif ($product->special_deal)
+                                                <div class="product-badges product-badges-position product-badges-mrg">
+                                                    <span class="sale">
+                                                        Sale
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        @endif
                                 </div>
                                 <div class="product-content-wrap">
                                     <div class="product-brand">
@@ -120,7 +133,7 @@
                                         <span class="font-small ml-5 text-muted"> (4.0)</span>
                                     </div>
                                     <div>
-                                        <span class="font-small text-muted">By <a href="vendor-details-1.html">NestFood</a></span>
+                                        <span class="font-small text-muted">By <a href="/">{{$website->company_name}}</a></span>
                                     </div>
                                     <div class="product-card-bottom">
                                         <div class="product-price">
@@ -131,9 +144,15 @@
                                             @endif
                                             <span class="old-price">${{$product->base_price}}</span>
                                         </div>
-                                        <div class="add-cart">
-                                            <a class="add" data-bs-toggle="modal" data-bs-target="#quickViewModal" id="{{$product->id}}" onclick="productView(this.id)"><i class="fi-rs-shopping-cart mr-5"></i>Add </a>
-                                        </div>
+                                        @if ($product->product_qty == 0)
+                                            <div class="out-of-stock">
+                                                <span class="add">Sold Out</span>
+                                            </div>
+                                        @else
+                                            <div class="add-cart">
+                                                <a class="add" data-bs-toggle="modal" data-bs-target="#quickViewModal" id="{{$product->id}}" onclick="productView(this.id)"><i class="fi-rs-shopping-cart mr-5"></i>Add </a>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

@@ -1,3 +1,8 @@
+@php
+    use App\Models\WebsiteSetting;
+
+    $website = WebsiteSetting::findOrFail(1);
+@endphp
 <section class="section-padding pb-5">
     <div class="section-title">
         <h3 class="">Deals Of The Day</h3>
@@ -44,7 +49,7 @@
                                 <span class="font-small ml-5 text-muted"> (4.0)</span>
                             </div>
                             <div>
-                                <span class="font-small text-muted">By <a href="vendor-details-1.html">NestFood</a></span>
+                                <span class="font-small text-muted">By <a href="/">{{$website->company_name}}</a></span>
                             </div>
                             <div class="product-card-bottom">
                                 <div class="product-price">

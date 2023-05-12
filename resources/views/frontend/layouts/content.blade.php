@@ -1,4 +1,8 @@
+@php
+    use App\Models\WebsiteSetting;
 
+    $website = WebsiteSetting::findOrFail(1);
+@endphp
 <main class="main">
     <section class="home-slider position-relative mb-30">
         <div class="container">
@@ -699,7 +703,7 @@
                                             <span class="font-small ml-5 text-muted"> (4.0)</span>
                                         </div>
                                         <div>
-                                            <span class="font-small text-muted">By <a href="vendor-details-1.html">NestFood</a></span>
+                                            <span class="font-small text-muted">By <a href="/">{{$website->company_name}}</a></span>
                                         </div>
                                         <div class="product-card-bottom">
                                             <div class="product-price">
@@ -730,189 +734,6 @@
         </section>
         <!--End Deals-->
     @endif
-
-    {{-- <section class="section-padding mb-30">
-        <div class="container">
-            <div class="row">
-                @if ($skip_product_0->count() != 0)
-                    <div class="col-xl-3 col-lg-4 col-md-6 mb-sm-5 mb-md-0 wow animate__animated animate__fadeInUp" data-wow-delay="0">
-                        <h4 class="section-title style-1 mb-30 animated animated">{{$skip_category_0->name}}</h4>
-                        <div class="product-list-small animated animated">
-                            @forelse ($skip_product_0 as $product)
-                                <article class="row align-items-center hover-up">
-                                    <figure class="col-md-4 mb-0">
-                                        <a href="{{Route('product.details',[$product->product_sku,$product->id,$product->product_slug])}}?category={{$product->category->slug}}&subcategory={{$product->subcategory->slug}}&subsubcategory={{$product->subsubcategory->slug}}" target="_blank">
-                                            <img src="{{$product->product_thumbnail}}" alt="" />
-                                        </a>
-                                    </figure>
-                                    <div class="col-md-8 mb-0">
-                                        <div class="product-brand">
-                                            <a href="{{Route('product.brand.details',[$product->brand_id])}}?brand={{$product->brand->slug}}">
-                                                {{$product->brand->name}}
-                                            </a>
-                                        </div>
-                                        <h6>
-                                            <a href="{{Route('product.details',[$product->product_sku,$product->id,$product->product_slug])}}?category={{$product->category->slug}}&subcategory={{$product->subcategory->slug}}&subsubcategory={{$product->subsubcategory->slug}}" target="_blank">
-                                                {!! Str::limit($product->product_name,25) !!}
-                                            </a>
-                                        </h6>
-                                        <div class="product-rate-cover">
-                                            <div class="product-rate d-inline-block">
-                                                <div class="product-rating" style="width: 90%"></div>
-                                            </div>
-                                            <span class="font-small ml-5 text-muted"> (4.0)</span>
-                                        </div>
-                                        <div class="product-price">
-                                            @if ($product->discount_price)
-                                                <span>${{$product->discount_price}} </span>
-                                            @else
-                                                <span>${{$product->selling_price}} </span>
-                                            @endif
-                                            <span class="old-price">${{$product->base_price}}</span>
-                                        </div>
-                                    </div>
-                                </article>
-                            @empty
-
-                            @endforelse
-                        </div>
-                    </div>
-                @endif
-                @if ($skip_product_1->count() != 0)
-                    <div class="col-xl-3 col-lg-4 col-md-6 mb-md-0 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
-                        <h4 class="section-title style-1 mb-30 animated animated">{{$skip_category_1->name}}</h4>
-                        <div class="product-list-small animated animated">
-                            @forelse ($skip_product_1 as $product)
-                                <article class="row align-items-center hover-up">
-                                    <figure class="col-md-4 mb-0">
-                                        <a href="{{Route('product.details',[$product->product_sku,$product->id,$product->product_slug])}}?category={{$product->category->slug}}&subcategory={{$product->subcategory->slug}}&subsubcategory={{$product->subsubcategory->slug}}" target="_blank">
-                                            <img src="{{$product->product_thumbnail}}" alt="" />
-                                        </a>
-                                    </figure>
-                                    <div class="col-md-8 mb-0">
-                                        <div class="product-brand">
-                                            <a href="{{Route('product.brand.details',[$product->brand_id])}}?brand={{$product->brand->slug}}">
-                                                {{$product->brand->name}}
-                                            </a>
-                                        </div>
-                                        <h6>
-                                            <a href="{{Route('product.details',[$product->product_sku,$product->id,$product->product_slug])}}?category={{$product->category->slug}}&subcategory={{$product->subcategory->slug}}&subsubcategory={{$product->subsubcategory->slug}}" target="_blank">
-                                                {!! Str::limit($product->product_name,25) !!}
-                                            </a>
-                                        </h6>
-                                        <div class="product-rate-cover">
-                                            <div class="product-rate d-inline-block">
-                                                <div class="product-rating" style="width: 90%"></div>
-                                            </div>
-                                            <span class="font-small ml-5 text-muted"> (4.0)</span>
-                                        </div>
-                                        <div class="product-price">
-                                            @if ($product->discount_price)
-                                                <span>${{$product->discount_price}} </span>
-                                            @else
-                                                <span>${{$product->selling_price}} </span>
-                                            @endif
-                                            <span class="old-price">${{$product->base_price}}</span>
-                                        </div>
-                                    </div>
-                                </article>
-                            @empty
-
-                            @endforelse
-                        </div>
-                    </div>
-                @endif
-                @if ($skip_brand_product_0->count() != 0)
-                    <div class="col-xl-3 col-lg-4 col-md-6 mb-sm-5 mb-md-0 d-none d-lg-block wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
-                        <h4 class="section-title style-1 mb-30 animated animated">{{$skip_brand_0->name}}</h4>
-                        <div class="product-list-small animated animated">
-                            @forelse ($skip_brand_product_0 as $product)
-                                <article class="row align-items-center hover-up">
-                                    <figure class="col-md-4 mb-0">
-                                        <a href="{{Route('product.details',[$product->product_sku,$product->id,$product->product_slug])}}?category={{$product->category->slug}}&subcategory={{$product->subcategory->slug}}&subsubcategory={{$product->subsubcategory->slug}}" target="_blank">
-                                            <img src="{{$product->product_thumbnail}}" alt="" />
-                                        </a>
-                                    </figure>
-                                    <div class="col-md-8 mb-0">
-                                        <div class="product-brand">
-                                            <a href="{{Route('product.brand.details',[$product->brand_id])}}?brand={{$product->brand->slug}}">
-                                                {{$product->brand->name}}
-                                            </a>
-                                        </div>
-                                        <h6>
-                                            <a href="{{Route('product.details',[$product->product_sku,$product->id,$product->product_slug])}}?category={{$product->category->slug}}&subcategory={{$product->subcategory->slug}}&subsubcategory={{$product->subsubcategory->slug}}" target="_blank">
-                                                {!! Str::limit($product->product_name,25) !!}
-                                            </a>
-                                        </h6>
-                                        <div class="product-rate-cover">
-                                            <div class="product-rate d-inline-block">
-                                                <div class="product-rating" style="width: 90%"></div>
-                                            </div>
-                                            <span class="font-small ml-5 text-muted"> (4.0)</span>
-                                        </div>
-                                        <div class="product-price">
-                                            @if ($product->discount_price)
-                                                <span>${{$product->discount_price}} </span>
-                                            @else
-                                                <span>${{$product->selling_price}} </span>
-                                            @endif
-                                            <span class="old-price">${{$product->base_price}}</span>
-                                        </div>
-                                    </div>
-                                </article>
-                            @empty
-
-                            @endforelse
-                        </div>
-                    </div>
-                @endif
-                @if ($skip_brand_product_1->count() != 0)
-                    <div class="col-xl-3 col-lg-4 col-md-6 mb-sm-5 mb-md-0 d-none d-xl-block wow animate__animated animate__fadeInUp" data-wow-delay=".3s">
-                        <h4 class="section-title style-1 mb-30 animated animated">{{$skip_brand_1->name}}</h4>
-                        <div class="product-list-small animated animated">
-                            @forelse ($skip_brand_product_1 as $product)
-                                <article class="row align-items-center hover-up">
-                                    <figure class="col-md-4 mb-0">
-                                        <a href="{{Route('product.details',[$product->product_sku,$product->id,$product->product_slug])}}?category={{$product->category->slug}}&subcategory={{$product->subcategory->slug}}&subsubcategory={{$product->subsubcategory->slug}}" target="_blank">
-                                            <img src="{{$product->product_thumbnail}}" alt="" />
-                                        </a>
-                                    </figure>
-                                    <div class="col-md-8 mb-0">
-                                        <div class="product-brand">
-                                            <a href="{{Route('product.brand.details',[$product->brand_id])}}?brand={{$product->brand->slug}}">
-                                                {{$product->brand->name}}
-                                            </a>
-                                        </div>
-                                        <h6>
-                                            <a href="{{Route('product.details',[$product->product_sku,$product->id,$product->product_slug])}}?category={{$product->category->slug}}&subcategory={{$product->subcategory->slug}}&subsubcategory={{$product->subsubcategory->slug}}" target="_blank">
-                                                {!! Str::limit($product->product_name,25) !!}
-                                            </a>
-                                        </h6>
-                                        <div class="product-rate-cover">
-                                            <div class="product-rate d-inline-block">
-                                                <div class="product-rating" style="width: 90%"></div>
-                                            </div>
-                                            <span class="font-small ml-5 text-muted"> (4.0)</span>
-                                        </div>
-                                        <div class="product-price">
-                                            @if ($product->discount_price)
-                                                <span>${{$product->discount_price}} </span>
-                                            @else
-                                                <span>${{$product->selling_price}} </span>
-                                            @endif
-                                            <span class="old-price">${{$product->base_price}}</span>
-                                        </div>
-                                    </div>
-                                </article>
-                            @empty
-
-                            @endforelse
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </section> --}}
     <!--End 4 columns-->
 
     <section class="section-padding mb-30">
