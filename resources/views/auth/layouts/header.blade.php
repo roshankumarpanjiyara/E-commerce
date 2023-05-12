@@ -2,6 +2,11 @@
 <html lang="en">
 	<!--begin::Head-->
 	<head><base href="../../../">
+        @php
+            use App\Models\WebsiteSetting;
+
+            $website = WebsiteSetting::findOrFail(1);
+        @endphp
 		<title>@yield('title') Ecommerce</title>
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
@@ -13,7 +18,7 @@
 		<meta property="og:url" content="" />
 		<meta property="og:site_name" content="" />
 		<link rel="canonical" href="" />
-		<link rel="shortcut icon" href="{{asset('logos/logo-small-1.png')}}" />
+		<link rel="shortcut icon" href="{{asset($website->icon)}}" />
 		<!--begin::Fonts-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 		<!--end::Fonts-->
@@ -33,6 +38,6 @@
 				<div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
 					<!--begin::Logo-->
 					<a href="/" class="mb-6">
-						<img alt="Logo" src="{{asset('logos/logo-bg-1.png')}}" class="h-100px w-250px" />
+						<img alt="Logo" src="{{asset($website->logo)}}" class="h-100px w-250px" />
 					</a>
 					<!--end::Logo-->
